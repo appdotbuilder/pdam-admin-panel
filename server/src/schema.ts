@@ -15,15 +15,15 @@ export const userSchema = z.object({
 export type User = z.infer<typeof userSchema>;
 
 export const createUserInputSchema = z.object({
-  username: z.string().min(3).max(50),
-  password: z.string().min(6).max(100),
+  username: z.string().trim().min(3).max(50),
+  password: z.string().trim().min(6).max(100),
   role: userRoleSchema
 });
 export type CreateUserInput = z.infer<typeof createUserInputSchema>;
 
 export const loginInputSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(1)
+  username: z.string().trim().min(1),
+  password: z.string().trim().min(1)
 });
 export type LoginInput = z.infer<typeof loginInputSchema>;
 

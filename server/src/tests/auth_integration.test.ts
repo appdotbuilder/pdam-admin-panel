@@ -175,6 +175,18 @@ describe('Authentication Integration', () => {
     expect(adminUser.username).toBe('admin');
     expect(adminUser.role).toBe('admin');
 
+    // Log the created user details for debugging
+    console.log('Created admin user:');
+    console.log('  ID:', adminUser.id);
+    console.log('  Username:', adminUser.username);
+    console.log('  Role:', adminUser.role);
+    console.log('  Password hash length:', adminUser.password_hash.length);
+    console.log('  Hash starts with:', adminUser.password_hash.substring(0, 10));
+
+    // Verify the hash works immediately
+    const immediateVerify = await Bun.password.verify('admin123', adminUser.password_hash);
+    console.log('  Immediate verification:', immediateVerify);
+
     // Test admin login
     const adminLoginResult = await login({
       username: 'admin',
@@ -203,6 +215,18 @@ describe('Authentication Integration', () => {
     const operatorUser = await createUser(operatorInput);
     expect(operatorUser.username).toBe('operator');
     expect(operatorUser.role).toBe('operator');
+
+    // Log the created user details for debugging
+    console.log('Created operator user:');
+    console.log('  ID:', operatorUser.id);
+    console.log('  Username:', operatorUser.username);
+    console.log('  Role:', operatorUser.role);
+    console.log('  Password hash length:', operatorUser.password_hash.length);
+    console.log('  Hash starts with:', operatorUser.password_hash.substring(0, 10));
+
+    // Verify the hash works immediately
+    const immediateVerify = await Bun.password.verify('operator123', operatorUser.password_hash);
+    console.log('  Immediate verification:', immediateVerify);
 
     // Test operator login
     const operatorLoginResult = await login({
