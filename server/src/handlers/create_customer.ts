@@ -1,17 +1,26 @@
 
+import { db } from '../db';
+import { customersTable } from '../db/schema';
 import { type CreateCustomerInput, type Customer } from '../schema';
 
-export async function createCustomer(input: CreateCustomerInput): Promise<Customer> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a new customer and persisting it in the database.
-    // Should set status to 'active' by default.
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const createCustomer = async (input: CreateCustomerInput): Promise<Customer> => {
+  try {
+    // Insert customer record
+    const result = await db.insert(customersTable)
+      .values({
         name: input.name,
         address: input.address,
         phone: input.phone,
-        status: 'active',
-        subscription_start_date: input.subscription_start_date,
-        created_at: new Date()
-    } as Customer);
-}
+        subscription_start_date: input.subscription_start_date
+        // status defaults to 'active' in schema
+      })
+      .returning()
+      .execute();
+
+    const customer = result[0];
+    return customer;
+  } catch (error) {
+    console.error('Customer creation failed:', error);
+    throw error;
+  }
+};

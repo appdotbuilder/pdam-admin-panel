@@ -1,9 +1,23 @@
 
+import { db } from '../db';
+import { materialPresetsTable } from '../db/schema';
 import { type MaterialPreset } from '../schema';
+import { asc } from 'drizzle-orm';
 
-export async function getMaterialPresets(): Promise<MaterialPreset[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all material presets for quick selection.
-    // Should be ordered by name for easy lookup.
-    return [];
-}
+export const getMaterialPresets = async (): Promise<MaterialPreset[]> => {
+  try {
+    const results = await db.select()
+      .from(materialPresetsTable)
+      .orderBy(asc(materialPresetsTable.name))
+      .execute();
+
+    // Convert numeric fields back to numbers
+    return results.map(preset => ({
+      ...preset,
+      default_unit_price: parseFloat(preset.default_unit_price)
+    }));
+  } catch (error) {
+    console.error('Failed to get material presets:', error);
+    throw error;
+  }
+};

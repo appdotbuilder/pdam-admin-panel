@@ -1,15 +1,28 @@
 
+import { db } from '../db';
+import { materialPresetsTable } from '../db/schema';
 import { type CreateMaterialPresetInput, type MaterialPreset } from '../schema';
 
-export async function createMaterialPreset(input: CreateMaterialPresetInput): Promise<MaterialPreset> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is creating a preset material with default pricing.
-    // Should be used to speed up material entry for installations.
-    return Promise.resolve({
-        id: 0, // Placeholder ID
+export const createMaterialPreset = async (input: CreateMaterialPresetInput): Promise<MaterialPreset> => {
+  try {
+    // Insert material preset record
+    const result = await db.insert(materialPresetsTable)
+      .values({
         name: input.name,
-        default_unit_price: input.default_unit_price,
-        unit: input.unit,
-        created_at: new Date()
-    } as MaterialPreset);
-}
+        default_unit_price: input.default_unit_price.toString(), // Convert number to string for numeric column
+        unit: input.unit
+      })
+      .returning()
+      .execute();
+
+    // Convert numeric fields back to numbers before returning
+    const preset = result[0];
+    return {
+      ...preset,
+      default_unit_price: parseFloat(preset.default_unit_price) // Convert string back to number
+    };
+  } catch (error) {
+    console.error('Material preset creation failed:', error);
+    throw error;
+  }
+};

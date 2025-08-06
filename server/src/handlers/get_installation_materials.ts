@@ -1,9 +1,26 @@
 
+import { db } from '../db';
+import { installationMaterialsTable } from '../db/schema';
 import { type InstallationMaterial } from '../schema';
+import { eq, asc } from 'drizzle-orm';
 
-export async function getInstallationMaterials(installationId: number): Promise<InstallationMaterial[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all materials for a specific installation.
-    // Should return materials ordered by creation date.
-    return [];
-}
+export const getInstallationMaterials = async (installationId: number): Promise<InstallationMaterial[]> => {
+  try {
+    const results = await db.select()
+      .from(installationMaterialsTable)
+      .where(eq(installationMaterialsTable.installation_id, installationId))
+      .orderBy(asc(installationMaterialsTable.created_at))
+      .execute();
+
+    // Convert numeric fields back to numbers
+    return results.map(material => ({
+      ...material,
+      quantity: parseFloat(material.quantity),
+      unit_price: parseFloat(material.unit_price),
+      total_cost: parseFloat(material.total_cost)
+    }));
+  } catch (error) {
+    console.error('Failed to get installation materials:', error);
+    throw error;
+  }
+};

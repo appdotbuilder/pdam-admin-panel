@@ -1,9 +1,18 @@
 
+import { db } from '../db';
+import { customersTable } from '../db/schema';
 import { type Customer } from '../schema';
 
-export async function getCustomers(): Promise<Customer[]> {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all customers from the database.
-    // Should include filtering by status if needed.
-    return [];
-}
+export const getCustomers = async (): Promise<Customer[]> => {
+  try {
+    const results = await db.select()
+      .from(customersTable)
+      .execute();
+
+    // No numeric conversions needed for customers table
+    return results;
+  } catch (error) {
+    console.error('Get customers failed:', error);
+    throw error;
+  }
+};
