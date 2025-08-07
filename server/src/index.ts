@@ -138,7 +138,8 @@ const appRouter = router({
     .input(createCustomerInputSchema)
     .mutation(({ input }) => createCustomer(input)),
   getCustomers: publicProcedure
-    .query(() => getCustomers()),
+    .input(z.object({ customerId: z.number().optional() }).optional())
+    .query(({ input }) => getCustomers(input?.customerId)),
   updateCustomer: publicProcedure
     .input(updateCustomerInputSchema)
     .mutation(({ input }) => updateCustomer(input)),
